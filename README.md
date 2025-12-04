@@ -1,4 +1,4 @@
-# Hyper　Auto
+# Hyper Auto
 
 C++26で、先を見通す**強力な型推論**！
 
