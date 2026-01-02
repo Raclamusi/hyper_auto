@@ -25,11 +25,6 @@ g++ -std=c++26 main.cpp -DHPA_DUMPTYPES -fno-diagnostics-show-caret hpa_end.cpp 
 g++ -std=c++26 main.cpp
 ```
 
-```bash
-clang++ -std=c++26 main.cpp -DHPA_DUMPTYPES -fno-caret-diagnostics hpa_end.cpp 2> typefile.inc
-clang++ -std=c++26 main.cpp
-```
-
 コンパイルを2回行うことで高度な型推論を実現します。
 
 1回目は、以下の表に示すコマンドライン引数を指定した上で、標準エラー出力を typefile.inc にリダイレクトして型情報を保存します。
