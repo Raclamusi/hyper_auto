@@ -78,7 +78,14 @@ struct unknown {
 
     template <class T>
         requires not_same_as<std::remove_cvref_t<T>, unknown>
-    constexpr operator T() {
+    constexpr operator T&() {
+        infer<std::decay_t<T>>();
+        return std::declval<T&>();
+    }
+
+    template <class T>
+        requires not_same_as<std::remove_cvref_t<T>, unknown> && std::is_rvalue_reference_v<T&&>
+    constexpr operator T&&() {
         infer<std::decay_t<T>>();
         return std::declval<T>();
     }
