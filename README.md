@@ -42,3 +42,7 @@ clang++ -std=c++26 main.cpp
 |`-fno-diagnostics-show-caret` (gcc)<br>`-fno-caret-diagnostics` (clang)|キャレット（コードの断片）を非表示にします。|
 |`hpa_end.cpp`|型情報の出力を終了します。|
 |`-DHPA_TYPEFILE=my_typefile.inc`|（任意）型情報として読み込むファイルを指定します。デフォルトは typefile.inc です。デフォルト以外のファイル名を使用する場合、コンパイル2回目にも指定する必要があります。|
+
+## 解説記事
+
+https://qiita.com/Raclamusi/items/6a0fe8134e2bba6dbf59
