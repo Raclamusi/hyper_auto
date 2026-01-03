@@ -46,3 +46,8 @@ clang++ -std=c++26 main.cpp
 ## 解説記事
 
 https://qiita.com/Raclamusi/items/6a0fe8134e2bba6dbf59
+
+## 別バージョン
+
+異なる型で複数回推論される場合に対応したバージョンを [common_type ブランチ](https://github.com/Raclamusi/hyper_auto/tree/common_type) で公開しています。
+解説記事の方法とは別の方法で実装されています。
