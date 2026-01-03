@@ -44,8 +44,8 @@ inline namespace details {
 } // inline namespace details
 
 
-template <std::uintmax_t>
-struct hyper_auto;
+template <std::uintmax_t ID, class T>
+struct inference;
 
 
 template <std::uintmax_t ID>
@@ -55,7 +55,7 @@ struct unknown {
     template <class T>
     static constexpr void infer() {
     #ifdef HPA_DUMPTYPES
-        static_assert(false, "\n*/\ntemplate <> struct " + type_name_of<hyper_auto<ID>>() + " { using type = " + type_name_of<T>() + "; };\n/*");
+        static_assert(false, "\n*/\n, " + type_name_of<inference<ID, T>>() + "\n/*");
     #else
         static_assert(false, "Type inference not yet completed. Define HPA_DUMPTYPES and compile to append to " HPA_TYPEFILE_STR ".");
     #endif
@@ -100,9 +100,48 @@ template <class T>
 inline constexpr bool is_unknown_v = is_unknown<T>::value;
 
 
+template <class...>
+struct type_list;
+
+template <std::uintmax_t ID, class Filtered, class... Remaining>
+struct inference_filter;
+template <std::uintmax_t ID>
+struct inference_filter<ID, type_list<>> {
+    using common_type = unknown<ID>;
+};
+template <std::uintmax_t ID, class... Types>
+struct inference_filter<ID, type_list<Types...>> {
+    using common_type = std::common_type_t<Types...>;
+};
+template <std::uintmax_t ID, class... Types, class T, class... Remaining>
+struct inference_filter<ID, type_list<Types...>, inference<ID, T>, Remaining...>
+    : inference_filter<ID, type_list<Types..., T>, Remaining...> {};
+template <std::uintmax_t ID, class... Types, std::uintmax_t OtherID, class T, class... Remaining>
+struct inference_filter<ID, type_list<Types...>, inference<OtherID, T>, Remaining...>
+    : inference_filter<ID, type_list<Types...>, Remaining...> {};
+
+template <class... Inferences>
+struct inference_list {
+    template <std::uintmax_t ID>
+    using common_type_for = inference_filter<ID, type_list<>, Inferences...>::common_type;
+};
+
+template <std::nullptr_t DummyForLeadingComma, class... Inferences>
+using make_inference_list = inference_list<Inferences...>;
+
+
+using all_inferences = make_inference_list<nullptr
+#if __has_include(HPA_TYPEFILE_STR)
+    #define In HPA_IGNORE(
+    #include HPA_TYPEFILE_STR
+    #undef In
+#endif
+>;
+
+
 template <std::uintmax_t ID>
 struct hyper_auto {
-    using type = unknown<ID>;
+    using type = all_inferences::common_type_for<ID>;
 };
 
 template <std::uintmax_t ID>
@@ -121,12 +160,6 @@ using hyper_auto_transitive_t = hyper_auto_transitive<ID>::type;
 
 } // namespace hpa
 
-
-#if __has_include(HPA_TYPEFILE_STR)
-    #define In HPA_IGNORE(
-    #include HPA_TYPEFILE_STR
-    #undef In
-#endif
 
 #ifdef HPA_DUMPTYPES
     static_assert(false, ")/*");

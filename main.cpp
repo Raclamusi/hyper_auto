@@ -21,4 +21,19 @@ int main() {
     static_assert(std::is_same_v<decltype(y), double>);
 
     static_assert(std::is_same_v<decltype(&f), int (*)(int)>);
+
+    // 異なる型で複数回推論される場合の例
+    {
+        AUTO z;
+        z = 0;  // ここで z の型が int と推論される
+        z = 2.718;  // ここで z の型が double と推論される
+        // 最終的に z の型は int と double の共通型である double になる
+        static_assert(std::is_same_v<decltype(z), double>);
+
+        AUTO s;
+        s = "Hello!";  // ここで s の型が const char* と推論される
+        [](std::string&){}(s);  // ここで s の型が std::string と推論される
+        // 最終的に s の型は const char* と std::string の共通型である std::string になる
+        static_assert(std::is_same_v<decltype(s), std::string>);
+    }
 }
